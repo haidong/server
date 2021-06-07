@@ -764,7 +764,7 @@ String *Item_func_des_encrypt::val_str(String *str)
     bzero((char*) &ivec,sizeof(ivec));
     if (!EVP_BytesToKey(EVP_des_ede3_cbc(),EVP_md5(),NULL,
 		   (uchar*) keystr->ptr(), (int) keystr->length(),
-		   1, (uchar*) &keyblock,ivec))
+		   1, (uchar*) &keyblock,ivec.bytes))
       goto error;
     DES_set_key(&keyblock.key1,&keyschedule.ks1);
     DES_set_key(&keyblock.key2,&keyschedule.ks2);
@@ -859,7 +859,7 @@ String *Item_func_des_decrypt::val_str(String *str)
     bzero((char*) &ivec,sizeof(ivec));
     if (!EVP_BytesToKey(EVP_des_ede3_cbc(),EVP_md5(),NULL,
 		   (uchar*) keystr->ptr(),(int) keystr->length(),
-		   1,(uchar*) &keyblock,ivec))
+		   1,(uchar*) &keyblock,ivec.bytes))
       goto error;
     // Here we set all 64-bit keys (56 effective) one by one
     DES_set_key(&keyblock.key1,&keyschedule.ks1);

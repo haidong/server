@@ -18,7 +18,8 @@
 #include <my_global.h>
 #include <string.h>
 
-#define template _template /* bug in WolfSSL 4.4.0, see also violite.h */
+// This causes template parse errors in the c++ stdlib.
+// #define template _template /* bug in WolfSSL 4.4.0, see also violite.h */
 #include <openssl/evp.h>
 #undef template
 #include <openssl/aes.h>

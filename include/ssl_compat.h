@@ -93,6 +93,14 @@
 #define SSL_CTX_set_ciphersuites(X,Y) 0
 #endif
 
+/* AWS-LC needs these defines, as we have OpenSSL 1.1
+ * compatibility via BoringSSL, but missing these
+ * functions. */
+#ifdef OPENSSL_IS_AWSLC
+#define EVP_CIPHER_CTX_buf_noconst(ctx) ((ctx)->buf)
+#define SSL_CTX_set_ciphersuites(X,Y) 0
+#endif
+
 #ifdef	__cplusplus
 extern "C" {
 #endif /* __cplusplus */
