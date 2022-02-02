@@ -557,7 +557,7 @@ my_bool str_to_time(const char *str, size_t length, MYSQL_TIME *l_time,
 
 fractional:
   /* Get fractional second part */
-  if (!status->warnings && str < end && *str == '.')
+  if (!status->warnings && str < end && (*str == '.' || *str == ':'))
   {
     uint number_of_fields= 0;
     str++;

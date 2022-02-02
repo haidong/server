@@ -3832,5 +3832,11 @@ CAST(LAST_DAY(TIME'00:00:00') AS TIME) AS c3;
 c1	c2	c3
 2018-08-31	00:00:00	00:00:00
 #
+# MDEV-22622 Microsecond parsing when delimiter is : instead of .
+#
+SELECT TIME_FORMAT("0:1:38:096", "%H:%i:%s:%f");
+TIME_FORMAT("0:1:38:096", "%H:%i:%s:%f")
+00:01:38:096000
+#
 # End of 10.3 tests
 #

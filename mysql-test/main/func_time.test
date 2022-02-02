@@ -2279,6 +2279,21 @@ SELECT
   CAST(CAST(LAST_DAY(TIME'00:00:00') AS DATE) AS TIME) AS c2,
   CAST(LAST_DAY(TIME'00:00:00') AS TIME) AS c3;
 
+#
+# End of MDEV-15363
+###################
+
+
+--echo #
+--echo # MDEV-22622 Microsecond parsing when delimiter is : instead of .
+--echo #
+
+SELECT TIME_FORMAT("0:1:38:096", "%H:%i:%s:%f");
+
+#
+# End of MDEV-22622
+###################
+
 --echo #
 --echo # End of 10.3 tests
 --echo #
