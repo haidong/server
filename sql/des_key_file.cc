@@ -81,10 +81,10 @@ load_des_key_file(const char *file_name)
 	EVP_BytesToKey(EVP_des_ede3_cbc(),EVP_md5(),NULL,
 		       (uchar *) start, (int) (end-start),1,
 		       (uchar *) &keyblock,
-		       ivec);
-	DES_set_key_unchecked(&keyblock.key1,&(des_keyschedule[(int)offset].ks1));
-	DES_set_key_unchecked(&keyblock.key2,&(des_keyschedule[(int)offset].ks2));
-	DES_set_key_unchecked(&keyblock.key3,&(des_keyschedule[(int)offset].ks3));
+                       ivec.bytes);
+	DES_set_key(&keyblock.key1,&(des_keyschedule[(int)offset].ks1));
+	DES_set_key(&keyblock.key2,&(des_keyschedule[(int)offset].ks2));
+	DES_set_key(&keyblock.key3,&(des_keyschedule[(int)offset].ks3));
 	if (des_default_key == 15)
 	  des_default_key= (uint) offset;		// use first as def.
       }

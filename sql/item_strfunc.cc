@@ -766,9 +766,9 @@ String *Item_func_des_encrypt::val_str(String *str)
 		   (uchar*) keystr->ptr(), (int) keystr->length(),
 		   1, (uchar*) &keyblock,ivec))
       goto error;
-    DES_set_key_unchecked(&keyblock.key1,&keyschedule.ks1);
-    DES_set_key_unchecked(&keyblock.key2,&keyschedule.ks2);
-    DES_set_key_unchecked(&keyblock.key3,&keyschedule.ks3);
+    DES_set_key(&keyblock.key1,&keyschedule.ks1);
+    DES_set_key(&keyblock.key2,&keyschedule.ks2);
+    DES_set_key(&keyblock.key3,&keyschedule.ks3);
   }
 
   /*
@@ -862,9 +862,9 @@ String *Item_func_des_decrypt::val_str(String *str)
 		   1,(uchar*) &keyblock,ivec))
       goto error;
     // Here we set all 64-bit keys (56 effective) one by one
-    DES_set_key_unchecked(&keyblock.key1,&keyschedule.ks1);
-    DES_set_key_unchecked(&keyblock.key2,&keyschedule.ks2);
-    DES_set_key_unchecked(&keyblock.key3,&keyschedule.ks3);
+    DES_set_key(&keyblock.key1,&keyschedule.ks1);
+    DES_set_key(&keyblock.key2,&keyschedule.ks2);
+    DES_set_key(&keyblock.key3,&keyschedule.ks3);
   }
   code= ER_OUT_OF_RESOURCES;
   if (str->alloc(length-1))
