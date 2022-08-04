@@ -36,7 +36,7 @@ image: fedora:33
 # submodules (a commit in this repo does not affect their builds anyway) and
 # many components that are otherwise slow to build.
 variables:
-  CMAKE_FLAGS: "-DWITH_SSL=system -DPLUGIN_COLUMNSTORE=NO -DPLUGIN_ROCKSDB=NO -DPLUGIN_S3=NO -DPLUGIN_MROONGA=NO -DPLUGIN_CONNECT=NO -DPLUGIN_MROONGA=NO -DPLUGIN_TOKUDB=NO -DPLUGIN_PERFSCHEMA=NO -DWITH_WSREP=OFF"
+  CMAKE_FLAGS: "-DWITH_SSL=/usr/local -DPLUGIN_COLUMNSTORE=NO -DPLUGIN_ROCKSDB=NO -DPLUGIN_S3=NO -DPLUGIN_MROONGA=NO -DPLUGIN_CONNECT=NO -DPLUGIN_MROONGA=NO -DPLUGIN_TOKUDB=NO -DPLUGIN_PERFSCHEMA=NO -DWITH_WSREP=OFF"
   # Major version dictates which branches share the same ccache. E.g. 10.6-abc
   # and 10.6-xyz will have the same cache.
   MARIADB_MAJOR_VERSION: "10.6"
@@ -73,6 +73,16 @@ variables:
   # just store it as a build artifact that can be downloaded and diffed against
   # other builds to detect which files where added/removed/moved
 
+.awslc_build: &awslc_build
+  - yum remove -y openssl-devel openssl  # Remove excess OpenSSL so it can't interfere
+  # There will however still be openssl-libs provided libcrypto.so and libssl.so and they cannot be removed,
+  # otherwise all software compiled against them sill start complaining about missing symbols
+  - cd extra/aws-lc
+  - mkdir aws-lc-build && cd aws-lc-build
+  - cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ../aws-lc
+  - make -j && make install  # Install AWS-LC to fully replace system OpenSSL /usr/lib64 and /usr/include/openssl
+  - cd ../../..  # return to project root
+
 fedora:
   stage: build
   variables:
@@ -84,6 +94,7 @@ fedora:
     - yum install -y https://github.com/stewartsmith/libeatmydata/releases/download/v129/libeatmydata-129-1.fc33.x86_64.rpm
     # This repository does not have any .spec files, so install dependencies based on Fedora spec file
     - yum-builddep -y mariadb-server
+    - *awslc_build
     - mkdir builddir; cd builddir
     - cmake -DRPM=$CI_JOB_NAME $CMAKE_FLAGS .. 2>&1 | tee -a ../build-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG.log
     - cmake --graphviz=../dependencies.dot .. && dot -Tpng -o ../dependencies.png ../dependencies.dot
@@ -115,6 +126,7 @@ fedora-ninja:
     - yum install -y https://github.com/stewartsmith/libeatmydata/releases/download/v129/libeatmydata-129-1.fc33.x86_64.rpm
     # This repository does not have any .spec files, so install dependencies based on Fedora spec file
     - yum-builddep -y mariadb-server
+    - *awslc_build
     - mkdir builddir; cd builddir
     - cmake -DRPM=generic $CMAKE_FLAGS -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON -G Ninja .. 2>&1 | tee -a ../build-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG.log
     - ninja -t graph > ../dependencies.dot && dot -Tpng -o ../dependencies.png ../dependencies.dot
@@ -146,6 +158,7 @@ fedora-clang:
     - yum install -y https://github.com/stewartsmith/libeatmydata/releases/download/v129/libeatmydata-129-1.fc33.x86_64.rpm
     # This repository does not have any .spec files, so install dependencies based on Fedora spec file
     - yum-builddep -y mariadb-server
+    - *awslc_build
     - mkdir builddir; cd builddir
     - export CXX=${CXX:-clang++}
     - export CC=${CC:-clang}
@@ -196,6 +209,7 @@ centos8:
     - export CCACHE_DIR="$(pwd)/.ccache"; ccache --zero-stats
     # This repository does not have any .spec files, so install dependencies based on CentOS spec file
     - yum-builddep -y mariadb-server
+    - *awslc_build
     - mkdir builddir; cd builddir
     - cmake -DRPM=$CI_JOB_NAME $CMAKE_FLAGS .. 2>&1 | tee -a ../build-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG.log
     - eatmydata make package -j 2 2>&1 | tee -a ../build-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG.log
@@ -229,6 +243,7 @@ centos7:
     - yum-builddep -y mariadb-server
     # ..with a few extra ones, as CentOS 7 is very old and these are added in newer MariaDB releases
     - yum install -y yum-utils rpm-build gcc gcc-c++ bison libxml2-devel libevent-devel openssl-devel pcre2-devel
+    - *awslc_build
     - mkdir builddir; cd builddir
     - cmake -DRPM=$CI_JOB_NAME $CMAKE_FLAGS .. 2>&1 | tee -a ../build-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG.log
     - make package -j 2 2>&1 | tee -a ../build-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG.log
