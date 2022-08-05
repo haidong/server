@@ -36,7 +36,7 @@ image: fedora:33
 # submodules (a commit in this repo does not affect their builds anyway) and
 # many components that are otherwise slow to build.
 variables:
-  CMAKE_FLAGS: "-DWITH_SSL=system -DPLUGIN_{COLUMNSTORE,ROCKSDB,S3,MROONGA,CONNECT,TOKUDB,PERFSCHEMA}=NO -DWITH_WSREP=OFF -DCMAKE_PREFIX_PATH=/usr/local"
+  CMAKE_FLAGS: "-DCMAKE_PREFIX_PATH=/usr/local -DWITH_SSL=system -DPLUGIN_COLUMNSTORE=NO -DPLUGIN_ROCKSDB=NO -DPLUGIN_S3=NO -DPLUGIN_MROONGA=NO -DPLUGIN_CONNECT=NO -DPLUGIN_SPHINX=NO -DPLUGIN_SPIDER=NO -DPLUGIN_TOKUDB=NO -DPLUGIN_PERFSCHEMA=NO -DWITH_WSREP=OFF"
   # Major version dictates which branches share the same ccache. E.g. 10.6-abc
   # and 10.6-xyz will have the same cache.
   MARIADB_MAJOR_VERSION: "10.6"
@@ -74,15 +74,13 @@ variables:
   # other builds to detect which files where added/removed/moved
 
 .awslc_build: &awslc_build
-  # - yum remove -y openssl-devel openssl  # Remove excess OpenSSL so it can't interfere
-  - yum makecache  # Centos7 probably needs this for cmake3 and ninja-build install
-  - yum install -y cmake3 ninja-build    # Install cmake3 and ninja-build since aws-lc requires it
+  - yum remove -y openssl-devel openssl  # Remove excess OpenSSL so it can't interfere
   # There will however still be openssl-libs provided libcrypto.so and libssl.so and they cannot be removed,
   # otherwise all software compiled against them sill start complaining about missing symbols
   - cd extra/aws-lc
   - mkdir aws-lc-build && cd aws-lc-build
-  - cmake3 -GNinja -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ../aws-lc
-  - ninja-build run_tests && ninja-build install  # Install AWS-LC to fully replace system OpenSSL /usr/lib64 and /usr/include/openssl
+  - cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ../aws-lc
+  - make -j && make install  # Install AWS-LC to fully replace system OpenSSL /usr/lib64 and /usr/include/openssl
   - cd ../../..  # return to project root
 
 fedora:
@@ -194,7 +192,7 @@ centos8:
     GIT_STRATEGY: fetch
     GIT_SUBMODULE_STRATEGY: normal
   script:
-    - yum install -y yum-utils rpm-build openssl-devel pcre2-devel
+    - yum install -y yum-utils rpm-build openssl-devel pcre2-devel cmake3
     - yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
     # dnf --enablerepo=powertools install Judy-devel  #--> not found
     - dnf config-manager --set-enabled powertools
