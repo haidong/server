@@ -74,7 +74,7 @@ variables:
   # other builds to detect which files where added/removed/moved
 
 .awslc_build: &awslc_build
-  - yum remove -y openssl-devel openssl  # Remove excess OpenSSL so it can't interfere
+  # - yum remove -y openssl-devel openssl  # Remove excess OpenSSL so it can't interfere
   - yum install -y cmake3 ninja-build    # Install cmake3 and ninja-build since aws-lc requires it
   # There will however still be openssl-libs provided libcrypto.so and libssl.so and they cannot be removed,
   # otherwise all software compiled against them sill start complaining about missing symbols
