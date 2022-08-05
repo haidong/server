@@ -75,12 +75,13 @@ variables:
 
 .awslc_build: &awslc_build
   - yum remove -y openssl-devel openssl  # Remove excess OpenSSL so it can't interfere
+  - yum install -y cmake3 ninja-build    # Install cmake3 and ninja-build since aws-lc requires it
   # There will however still be openssl-libs provided libcrypto.so and libssl.so and they cannot be removed,
   # otherwise all software compiled against them sill start complaining about missing symbols
   - cd extra/aws-lc
   - mkdir aws-lc-build && cd aws-lc-build
-  - cmake3 -G "Unix Makefiles" -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ../aws-lc
-  - make -j && make install  # Install AWS-LC to fully replace system OpenSSL /usr/lib64 and /usr/include/openssl
+  - cmake3 -GNinja -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ../aws-lc
+  - ninja-build run_tests && ninja-build install  # Install AWS-LC to fully replace system OpenSSL /usr/lib64 and /usr/include/openssl
   - cd ../../..  # return to project root
 
 fedora:
