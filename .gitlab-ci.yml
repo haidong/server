@@ -81,7 +81,7 @@ variables:
   - cd extra/aws-lc
   - mkdir aws-lc-build && cd aws-lc-build
   - cmake -GNinja -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ../aws-lc
-  - ninja-build all_tests && ninja-build install  # Install AWS-LC to fully replace system OpenSSL /usr/lib64 and /usr/include/openssl
+  - ninja-build run_tests && ninja-build install  # Install AWS-LC to fully replace system OpenSSL /usr/lib64 and /usr/include/openssl
   - cd ../../..  # return to project root
 
 fedora:
