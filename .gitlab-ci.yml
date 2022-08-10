@@ -135,7 +135,7 @@ fedora-ninja:
     # @TODO: Unlike other builds, the Ninja builds using Gitlab.com runners don't get stuck, but they do get
     # stuck on runners with more processors, see https://jira.mariadb.org/browse/MDEV-25968.
     # Thus, use the same limitation on Ninja builds as well to ensure it never gets stuck due to this bug.
-    - ninja test
+    - ninja test -j 2
     - *rpm_listfiles
     - mkdir ../rpm; mv *.rpm ../rpm
   artifacts:
