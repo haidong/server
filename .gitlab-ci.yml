@@ -147,6 +147,7 @@ fedora-ninja:
       - builddir/_CPack_Packages/Linux/RPM/SPECS/
       - dependencies.dot
       - dependencies.png
+  allow_failure: true
 
 fedora-clang:
   stage: build
@@ -245,7 +246,8 @@ centos7:
     # ..with a few extra ones, as CentOS 7 is very old and these are added in newer MariaDB releases
     - yum install -y yum-utils rpm-build gcc gcc-c++ bison libxml2-devel libevent-devel openssl-devel pcre2-devel
     - yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    - yum install -y cmake3
+    # aws-lc needs cmake3 but the cmake that comes with centos7 is below 3. The following 2 steps fix it
+    - yum install -y cmake3 
     - ln -sf /usr/bin/cmake3 /usr/bin/cmake
     - *awslc_build
     - mkdir builddir; cd builddir
