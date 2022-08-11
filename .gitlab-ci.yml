@@ -80,7 +80,7 @@ variables:
   # otherwise all software compiled against them sill start complaining about missing symbols
   - cd extra/aws-lc
   - mkdir aws-lc-build && cd aws-lc-build
-  - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DFIPS=1 ../aws-lc
+  - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ../aws-lc
   - ninja-build run_tests && ninja-build install  # Install AWS-LC to fully replace system OpenSSL /usr/lib64 and /usr/include/openssl
   - cd ../../..  # return to project root
 
