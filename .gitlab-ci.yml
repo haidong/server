@@ -147,7 +147,6 @@ fedora-ninja:
       - builddir/_CPack_Packages/Linux/RPM/SPECS/
       - dependencies.dot
       - dependencies.png
-  allow_failure: true
 
 fedora-clang:
   stage: build
