@@ -540,3 +540,6 @@ call mtr.add_suppression("Column count of mysql.proc is wrong. Expected 21, foun
 
 --let $old_version= 10.4
 --source include/load_dump_and_upgrade.inc
+
+--let $old_version= 10.6
+--source include/load_dump_and_upgrade.inc
